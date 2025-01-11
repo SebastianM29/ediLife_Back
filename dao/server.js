@@ -2,8 +2,17 @@ import express from "express";
 import * as http from "http";
 import {Server as SocketIoServer} from "socket.io";
 import cors from "cors";
+
+import session from "express-session";
+import MongoStore from "connect-mongo";
+import passport from "passport";
+
+
 import { socketController } from "../helpers/socketController.js";
 import { connectDb } from "../db/config.js";
+
+import  sessionRoutes  from "../routes/user.routes.js";
+import { passportInitialize } from "../helpers/passportConfig.js";
 
 
 
@@ -23,6 +32,7 @@ export class Server {
         })
         this.middlewares()
         this.routes()
+        passportInitialize()
         this.sockets()
         this.connectionDB()
 
@@ -32,13 +42,29 @@ export class Server {
     middlewares() {
         this.app.use(express.json())
         this.app.use(express.urlencoded({extended:true}))
-        this.app.use(cors())
+        this.app.use(cors({
+            origin:"http://localhost:5173",
+            credentials:true
+        }))
+        this.app.use(session({
+            store:MongoStore.create({
+                mongoUrl:"mongodb+srv://zevaz:ac5m1jrJNBQIR4aU@cluster0.ksj8g.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0",
+                ttl:100000
+            }),
+            secret:"123456",
+            resave:false,
+            saveUninitialized:false,
+
+            cookie:{
+                maxAge: 24 *60 *60 * 1000,
+                secure: false,
+                httpOnly:true
+            }
+        }))
     }
 
     routes(){
-        this.app.get("/", (req, res) => {
-            res.send("Servidor funcionando correctamente!");
-        });
+        this.app.use("/", sessionRoutes);
 
     }
 
