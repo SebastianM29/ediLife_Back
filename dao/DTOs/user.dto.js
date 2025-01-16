@@ -5,6 +5,7 @@ export class UserDTO {
         this.email = user.email
         this.age = user.age
         this.role = user.role
+        this.id = user._id
     }
 
 }

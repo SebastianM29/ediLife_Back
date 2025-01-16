@@ -70,7 +70,8 @@ export class Server {
 
     sockets() {
         this.io.on('connection',(socket) =>{
-      
+           console.log('conectado el cliente');
+           
             
           socketController(socket,this.io)
         })
