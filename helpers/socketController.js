@@ -22,13 +22,13 @@ socket.on('userConnected', (user) => {
      if (!find) {
         console.log('se puede grabar');
         users.push(objCreated)
-     }else{
+    }else{
         console.log('no se puede grabar el usuario');
-        return
         
-     }
+        
+    }
     
-     io.emit ('online',users)
+    io.emit ('online',users)
     
 })    
 socket.on('msg', (data) => {
@@ -42,12 +42,19 @@ io.emit('mgs',{
 })
 
 
-socket.on('logout',() => {
-    console.log('debe entrar a logout');
+socket.on('logout',(socketId) => {
+    console.log('debe entrar a logout',socketId);
     
-    users =  users.filter(element => element.socketID !== socket.id ) 
+    users =  users.filter(element => 
+        {   console.log('pasando y chequeando element.socketId',element.socketID);
+           console.log('pasando y chequeando el socket que me envia',socketId);
+        
+            return element.socketID !== socketId.socket }) 
+    console.log('usuarios filtrados ?', users);
 
     io.emit ('online', users)
+    
+    io.emit('logoutConfirmed')
 })
 socket.on('disconnect',() => {
     console.log('si se va entraria aca');
@@ -57,6 +64,7 @@ socket.on('disconnect',() => {
     users =  users.filter(element => element.socketID !== socket.id ) 
 
    io.emit ('online', users)
+   socket.emit('logoutConfirmed');
 
 })
 
