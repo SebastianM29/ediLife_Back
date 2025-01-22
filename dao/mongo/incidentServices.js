@@ -1,6 +1,6 @@
 import  Incident  from "../mongo/models/incidentModels.js";
 
-export class incidentServices {
+export class IncidentServices {
     constructor() {
        this.option = {
         weekday: 'long',
@@ -34,18 +34,14 @@ export class incidentServices {
             repair:false
         }
     const created = await Incident.create(obj)
-      return ({
-        error:false,
-        created
-    })
+    console.log('creado en el servicio', created);
+    
+      return (created)
     }
     
     async allIncidents() {
         const allIncidents = await Incident.find()
-        return({
-            error:false,
-            allIncidents
-        })
+        return allIncidents
     }
 
 

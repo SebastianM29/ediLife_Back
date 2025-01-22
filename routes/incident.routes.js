@@ -1,8 +1,8 @@
 import { request,response,Router } from "express";
-import { incidentServices } from "../dao/mongo/incidentServices.js";
+import { IncidentServices } from "../dao/mongo/incidentServices.js";
 const router = Router()
 //agregar arquitectura de capas
-const mustAdd =new incidentServices()
+const mustAdd =new IncidentServices()
 
 
 router.post('/addIncident',async(req=request,res=response) => {
