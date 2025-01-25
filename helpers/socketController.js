@@ -1,4 +1,5 @@
 import { IncidentServices } from "../dao/mongo/incidentServices.js";
+import { addIncidentPer } from "../persistence/incidentData.js";
 
 const incidents =new IncidentServices()
 let users= []
@@ -55,16 +56,29 @@ io.emit('mgs',{
 
 socket.on('newIncident',async(dataIncident) => {
 
-    console.log('aca esta el que debo agregar',dataIncident);
-    const newIN = await incidents.addIncident(dataIncident)
-    console.log('esto deberia traer un valor',newIN);
-    console.log('esto deberia traer un valor en nuevo incidente',allIncidents);
-    
+    const session = socket.request.session;
+
+    if (session) {
+        console.log('Sesión activa:', session);
+    } else {
+        console.log('No hay sesión activa.');
+    }
+    const newIN = await addIncidentPer(dataIncident)
+  
     allIncidents.push(newIN)
     console.log('deberia ver todos los incidentes mas el nuevo',allIncidents);
     
     io.emit('allIncidents',{allIncidents})
     
+})
+
+socket.on('showAlert',() => {
+    console.log('estp deberia habiliotar una alerta');
+    io.emit('changeAlert', {change:true} )
+})
+socket.on('changeColorIncident',() => {
+    console.log('estp deberia habiliotar una alerta');
+    io.emit('changeColorI', {change:true} )
 })
 
 

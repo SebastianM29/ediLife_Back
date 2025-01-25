@@ -31,9 +31,24 @@ export class Server {
                 methods:["GET","POST"]
             }
         })
+        this.configSession = {
+            store:MongoStore.create({
+            mongoUrl:"mongodb+srv://zevaz:ac5m1jrJNBQIR4aU@cluster0.ksj8g.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0",
+            ttl:100000
+        }),
+        secret:"123456",
+        resave:false,
+        saveUninitialized:false,
+
+        cookie:{
+            maxAge: 24 *60 *60 * 1000,
+            secure: false,
+            httpOnly:true
+        }}
         this.middlewares()
         this.routes()
         passportInitialize()
+        this.configureSockets()
         this.sockets()
         this.connectionDB()
 
@@ -47,27 +62,17 @@ export class Server {
             origin:"http://localhost:5173",
             credentials:true
         }))
-        this.app.use(session({
-            store:MongoStore.create({
-                mongoUrl:"mongodb+srv://zevaz:ac5m1jrJNBQIR4aU@cluster0.ksj8g.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0",
-                ttl:100000
-            }),
-            secret:"123456",
-            resave:false,
-            saveUninitialized:false,
-
-            cookie:{
-                maxAge: 24 *60 *60 * 1000,
-                secure: false,
-                httpOnly:true
-            }
-        }))
+        this.app.use(session(this.configSession))
     }
 
     routes(){
         this.app.use("/", sessionRoutes);
         this.app.use("/", incidentRoutes);
 
+    }
+    configureSockets(){
+        const wrap = (middleware) => (socket,next) => middleware(socket.request,{},next)
+        this.io.use(wrap(session(this.configSession))) 
     }
 
     sockets() {
