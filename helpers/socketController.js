@@ -1,9 +1,11 @@
 import { IncidentServices } from "../dao/mongo/incidentServices.js";
 import { addIncidentPer } from "../persistence/incidentData.js";
+import { addCalendarServices, deleteCalendarServices } from "../services/calendarServices.js";
 
 const incidents =new IncidentServices()
 let users= []
 let allIncidents=[]
+let allCalendar = []
 
 export const socketController = async(socket,io) => {
 console.log('cliente conectado',socket.id);
@@ -80,6 +82,49 @@ socket.on('changeColorIncident',() => {
     console.log('estp deberia habiliotar una alerta');
     io.emit('changeColorI', {change:true} )
 })
+
+
+
+
+
+
+socket.on('getCalendar',(data) => {
+allCalendar = data
+})
+socket.on('calendar', async (data) => {
+     const dataCalendar = await addCalendarServices(data)
+     if (dataCalendar.error) {
+        return socket.emit('calendarData',{msg:dataCalendar.msg})
+     }  
+        allCalendar.push(dataCalendar)
+        io.emit('calendarData',{data:allCalendar})
+    //    io.emit('calendarDataUser',{data:allCalendar})
+})
+socket.on('alertCalendar',() => {
+    io.emit('alertCalendarState',{val:true})
+})
+socket.on('deleteEvent',async(data) => {
+
+    console.log('este es el objeto', data);
+    const del = await deleteCalendarServices(data)
+    if (del.error) {
+       return socket.emit('delete',{error:true,msg:del.msg})
+    }
+              socket.emit('delete',{error:false,msg:del.msg})
+              const filterEvent = allCalendar.filter((element => element._id.toString() !== data))
+              allCalendar=filterEvent
+              console.log('debo verlo con uno filter',filterEvent);
+              console.log('debo verlo con uno',allCalendar);
+              
+              io.emit('calendarData',{data:allCalendar})
+    
+})
+
+
+
+
+
+
 
 
 socket.on('logout',(socketId) => {

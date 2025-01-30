@@ -13,6 +13,7 @@ import { connectDb } from "../db/config.js";
 
 import  sessionRoutes  from "../routes/user.routes.js";
 import  incidentRoutes  from "../routes/incident.routes.js";
+import  calendarRoutes  from "../routes/calendar.routes.js";
 import { passportInitialize } from "../helpers/passportConfig.js";
 
 
@@ -68,6 +69,7 @@ export class Server {
     routes(){
         this.app.use("/", sessionRoutes);
         this.app.use("/", incidentRoutes);
+        this.app.use("/", calendarRoutes);
 
     }
     configureSockets(){
