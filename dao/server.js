@@ -14,6 +14,7 @@ import { connectDb } from "../db/config.js";
 import  sessionRoutes  from "../routes/user.routes.js";
 import  incidentRoutes  from "../routes/incident.routes.js";
 import  calendarRoutes  from "../routes/calendar.routes.js";
+import  edifRoutes  from "../routes/edif.routes.js";
 import { passportInitialize } from "../helpers/passportConfig.js";
 
 
@@ -70,6 +71,7 @@ export class Server {
         this.app.use("/", sessionRoutes);
         this.app.use("/", incidentRoutes);
         this.app.use("/", calendarRoutes);
+        this.app.use("/", edifRoutes);
 
     }
     configureSockets(){
